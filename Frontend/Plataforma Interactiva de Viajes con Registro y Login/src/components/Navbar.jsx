@@ -1,9 +1,9 @@
-//navbar
 import React from 'react';
+import './Navbar.css';
 
 function Navbar() {
     return (
-        <header>
+        <header id="header">
             <nav>
                 <ul>
                     <li><a href="#home">Home</a></li>

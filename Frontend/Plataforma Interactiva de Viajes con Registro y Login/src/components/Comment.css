@@ -1,0 +1,28 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+h1{
+    text-align: center;
+    color: rgb(213, 89, 89);
+    margin: 30px;
+
+}
+
+
+#comment ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 20px;
+    border: 1px solid rgb(216, 156, 156);
+    padding: 20px;
+}
+#comment li{
+    margin: 10px;
+    border: 1px solid rgb(240, 236, 236);
+    padding: 10px;
+    text-align: left
+}
