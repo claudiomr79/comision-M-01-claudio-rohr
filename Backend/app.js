@@ -1,22 +1,24 @@
 import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+
+import { postsRouter } from "./routes/post-routes.js";
+
+import { env } from "./settings/envs.js";
 
 const app = express();
-app.get("/posts", (req, res) => {
-  res.send("Todos los recursos");
-});
 
-app.post("/posts", (req, res) => {
-  res.send("Recurso creado");
-});
+// middlewares
+app.use(express.json());
+app.use(morgan("dev"));
+app.use(cors());
+app.use(helmet());
 
-app.patch("/posts/:id", (req, res) => {
-  res.send("Recurso actualizado");
-});
+// app.use(validatePost);
 
-app.delete("/posts/:id", (req, res) => {
-  res.send("Recurso eliminado");
-});
+app.use("/posts", postsRouter);
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+app.listen(env.PORT, () => {
+  console.log(`server on port ${env.PORT}`);
 });
