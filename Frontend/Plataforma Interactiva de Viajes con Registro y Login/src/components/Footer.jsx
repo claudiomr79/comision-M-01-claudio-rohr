@@ -1,9 +1,8 @@
-import React from 'react'
+import React from "react";
+import "./Footer.css";
 
 function Footer() {
-  return (
-    <footer>Claudio Rohr - Argentina programa</footer>
-  )
+  return <footer>Claudio Rohr - Argentina programa - 2023</footer>;
 }
 
-export default Footer
+export default Footer;
