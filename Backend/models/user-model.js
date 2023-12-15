@@ -11,7 +11,7 @@ const createNewUser = async ({ name, email, password }) => {
     name,
     email,
     password: hashedPassword,
-    isAdmin: name === "seba",
+    isAdmin: true, //por ahora todos los usuarios son admin
   };
 
   listOfUsers.push(newUser);
