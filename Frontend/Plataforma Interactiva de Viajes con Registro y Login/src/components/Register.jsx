@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Register.css";
 
 export const Register = () => {
@@ -6,7 +6,22 @@ export const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  useEffect(() => {
+    console.log("useEffect");
+    //enviar al backend para generar el token a https://localhost:4000/users/register/
+    fetch("https://localhost:4000/user/register/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data, "data");
+      })
+      .catch((err) => console.log(err));
+  }, [name, email, password, confirmPassword]);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (e.target.name.value === "") {
@@ -55,7 +70,6 @@ export const Register = () => {
       {name && <h2>Nombre: {name}</h2>}
       {email && <h2>Email: {email}</h2>}
       {password && <h2>Password: {password}</h2>}
-      {confirmPassword && <h2>Confirm Password: {confirmPassword}</h2>}
     </>
   );
 };

@@ -1,5 +1,6 @@
 import { userModel, loginUser } from "../models/user-model.js";
 import jwt from "jsonwebtoken";
+import { env } from "../settings/envs.js";
 
 export function ctrlGetUserById(req, res) {
   const { userId } = req.params;
@@ -28,7 +29,7 @@ export async function ctrlLoginUser(req, res) {
 
   if (!user) return res.sendStatus(404);
 
-  const token = jwt.sign({ userId: user.id }, "secret"); // TODO: use env variable
+  const token = jwt.sign({ userId: user.id }, process.env.SECRET); // TODO: use env variable
 
   res.status(200).json({ token });
 }
