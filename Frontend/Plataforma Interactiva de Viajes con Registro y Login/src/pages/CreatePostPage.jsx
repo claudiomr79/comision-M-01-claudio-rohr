@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPost } from '../services/postService';
-// import { useAuth } from '../context/AuthContext'; // Not strictly needed if page is always protected
+// import { useAuth } from '../context/AuthContext'; // No es estrictamente necesario si la página siempre está protegida por ProtectedRoute
 
+// Página para crear un nuevo post.
 function CreatePostPage() {
+  // Estados para los campos del formulario.
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
-  const [image, setImage] = useState(''); // For image URL
+  const [image, setImage] = useState(''); // URL de la imagen.
+  // Estados para el manejo de errores y carga.
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  // const { authState } = useAuth(); // authState.user.id could be used if backend didn't get it from token
+  const navigate = useNavigate(); // Hook para la navegación.
 
+  // Manejador para el envío del formulario.
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -43,9 +46,14 @@ function CreatePostPage() {
           <input
             type="text"
             id="title"
+            name="title" // Añadir name para posible uso futuro o consistencia
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (error) setError(null); // Limpiar error al escribir
+            }}
             required
+            disabled={loading} // Deshabilitar input durante la carga
             style={{ width: '100%', padding: '8px' }}
           />
         </div>
@@ -53,10 +61,15 @@ function CreatePostPage() {
           <label htmlFor="desc" style={{ display: 'block', marginBottom: '5px' }}>Description:</label>
           <textarea
             id="desc"
+            name="desc" // Añadir name
             value={desc}
-            onChange={(e) => setDesc(e.target.value)}
+            onChange={(e) => {
+              setDesc(e.target.value);
+              if (error) setError(null); // Limpiar error al escribir
+            }}
             required
             rows="5"
+            disabled={loading} // Deshabilitar input durante la carga
             style={{ width: '100%', padding: '8px' }}
           />
         </div>
@@ -65,15 +78,22 @@ function CreatePostPage() {
           <input
             type="url"
             id="image"
+            name="image" // Añadir name
             value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="https://example.com/image.jpg"
+            onChange={(e) => {
+              setImage(e.target.value);
+              if (error) setError(null); // Limpiar error al escribir
+            }}
+            placeholder="https://ejemplo.com/imagen.jpg"
+            disabled={loading} // Deshabilitar input durante la carga
             style={{ width: '100%', padding: '8px' }}
           />
         </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" disabled={loading} style={{ padding: '10px 15px' }}>
-          {loading ? 'Creating Post...' : 'Create Post'}
+        {/* Muestra el mensaje de error si existe */}
+        {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+        <button type="submit" disabled={loading} style={{ padding: '10px 15px', marginTop: '10px' }}>
+          {loading ? 'Creando Post...' : 'Crear Post'}
         </button>
       </form>
     </div>

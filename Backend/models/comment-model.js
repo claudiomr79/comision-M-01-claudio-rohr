@@ -1,44 +1,45 @@
-// In-memory store for comments
-const comments = [];
-let currentId = 1;
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
 
-export class CommentModel {
-  constructor(text, postId, userId) {
-    this.id = currentId++;
-    this.text = text;
-    this.postId = postId;
-    this.userId = userId; // This will link to the user who created the comment
-    this.createdAt = new Date();
+// Esquema de Comment para MongoDB
+// Define la estructura y las validaciones para los documentos de comentarios.
+const commentSchema = new Schema(
+  {
+    text: {
+      type: String,
+      required: [true, 'El texto del comentario es obligatorio.'],
+      trim: true,
+      minlength: [1, 'El comentario no puede estar vacío.'],
+      maxlength: [1000, 'El comentario no debe exceder los 1000 caracteres.']
+    },
+    userId: { // Referencia al usuario que escribió el comentario.
+      type: Schema.Types.ObjectId,
+      required: [true, 'El ID del usuario es obligatorio.'],
+      ref: 'User', // Referencia al modelo 'User'.
+    },
+    postId: { // Referencia al post al que pertenece el comentario.
+      type: Schema.Types.ObjectId,
+      required: [true, 'El ID del post es obligatorio.'],
+      ref: 'Post', // Referencia al modelo 'Post'.
+    },
+    // No se incluye 'id' explícitamente ya que MongoDB genera un '_id' automáticamente.
+  },
+  {
+    timestamps: true, // Habilita createdAt y updatedAt.
   }
+);
 
-  static create({ text, postId, userId }) {
-    // In a real scenario, you would also check if postId and userId are valid existing IDs.
-    if (!text || !postId || !userId) {
-      // Basic validation, can be expanded
-      return null;
-    }
-    const newComment = new CommentModel(text, postId, userId);
-    comments.push(newComment);
-    return newComment;
+// Middleware para transformar la salida JSON del comentario.
+commentSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
   }
+});
 
-  static findByPostId(postId) {
-    // Ensure postId is treated as a number if IDs are numbers, or string if they are strings.
-    // Assuming currentId generates numbers, postId in comments will be numbers.
-    const numericPostId = parseInt(postId, 10);
-    return comments.filter(comment => comment.postId === numericPostId);
-  }
+// Creación del modelo Comment a partir del esquema.
+const CommentModel = mongoose.model('Comment', commentSchema);
 
-  static findById(id) {
-    const numericId = parseInt(id, 10);
-    return comments.find(comment => comment.id === numericId);
-  }
-
-  // Optional: A method to get all comments (mainly for debugging or specific use cases)
-  static findAll() {
-    return comments;
-  }
-}
-
-// Export the class to be used as commentModel
-export const commentModel = CommentModel;
+// Exportación del modelo.
+export { CommentModel };

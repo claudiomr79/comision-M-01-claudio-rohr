@@ -50,7 +50,10 @@ function StartSession() {
             type="email"
             id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError(null); // Limpiar error al escribir
+            }}
             required
             disabled={loading}
           />
@@ -61,7 +64,10 @@ function StartSession() {
             type="password"
             id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (error) setError(null); // Limpiar error al escribir
+            }}
             required
             disabled={loading}
           />

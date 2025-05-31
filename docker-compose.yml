@@ -1,0 +1,90 @@
+# docker-compose.yml para la Plataforma Interactiva de Viajes
+
+version: '3.8' # Especifica la versión de la sintaxis de Docker Compose.
+
+services:
+  # --- Servicio MongoDB ---
+  mongo:
+    image: mongo:latest # Utiliza la imagen oficial más reciente de MongoDB.
+    container_name: travel_mongo_db # Nombre opcional para el contenedor.
+    ports:
+      - "27017:27017" # Mapea el puerto 27017 del contenedor al puerto 27017 del host.
+    volumes:
+      - mongo-data:/data/db # Monta un volumen nombrado para persistir los datos de MongoDB.
+    restart: unless-stopped # Reinicia el contenedor a menos que se detenga manualmente.
+    networks:
+      - travel-network # Conecta el servicio a una red personalizada.
+
+  # --- Servicio Backend ---
+  backend:
+    build:
+      context: ./Backend # Directorio donde se encuentra el Dockerfile del backend.
+      dockerfile: Dockerfile # Nombre del Dockerfile (opcional si es 'Dockerfile').
+    container_name: travel_backend_app
+    ports:
+      # Mapea el puerto del host (definido en .env) al puerto del contenedor.
+      # BACKEND_PORT_CONTAINER debe ser el puerto que la app Node.js escucha (definido en envs.js y EXPOSE en Dockerfile).
+      - "${BACKEND_PORT_HOST}:${BACKEND_PORT_CONTAINER}"
+    environment:
+      # Configuración del entorno para el backend.
+      # MONGO_URI apunta al servicio 'mongo' en la red de Docker, usando el puerto por defecto de MongoDB.
+      MONGO_URI: mongodb://mongo:27017/travel_platform_db_docker
+      JWT_SECRET: ${JWT_SECRET} # Se tomará del archivo .env en la raíz del proyecto.
+      PORT: ${BACKEND_PORT_CONTAINER} # Puerto interno que usa la aplicación Node.js.
+      # NODE_ENV: development # O 'production', según sea necesario.
+    depends_on:
+      - mongo # Asegura que el servicio 'mongo' se inicie antes que el backend.
+    volumes:
+      # Montaje de volumen para desarrollo: refleja los cambios del código local en el contenedor.
+      # Esto es útil para hot-reloading con herramientas como nodemon.
+      # Para producción, este volumen de código fuente generalmente se omite; el código se copia en la imagen.
+      - ./Backend:/usr/src/app/backend
+      # Evita que la carpeta node_modules local sobrescriba la del contenedor (que fue instalada con 'npm install').
+      - /usr/src/app/backend/node_modules
+    restart: unless-stopped
+    networks:
+      - travel-network
+
+  # --- Servicio Frontend ---
+  frontend:
+    build:
+      context: ./Frontend/Plataforma Interactiva de Viajes con Registro y Login # Directorio del Dockerfile del frontend.
+      dockerfile: Dockerfile
+    container_name: travel_frontend_app
+    ports:
+      # Mapea el puerto del host (definido en .env) al puerto 80 del contenedor Nginx.
+      - "${FRONTEND_PORT_HOST}:80"
+    # environment:
+      # Si el frontend necesita saber la URL base del API en tiempo de ejecución Y NO se usa un proxy en Nginx.
+      # Esta variable debería ser leída por la app Vite (ej. import.meta.env.VITE_API_BASE_URL).
+      # Para que Vite la tome, Nginx necesitaría un preprocesamiento o usar args de build en Dockerfile.
+      # VITE_API_BASE_URL: http://localhost:${BACKEND_PORT_HOST}/api # Ejemplo
+      # Una mejor aproximación es configurar Nginx como reverse proxy (ver Dockerfile del frontend).
+    depends_on:
+      - backend # Asegura que el backend (y por ende MongoDB) esté disponible.
+    restart: unless-stopped
+    networks:
+      - travel-network
+
+# --- Volúmenes Nombrados ---
+# Define el volumen nombrado 'mongo-data' para la persistencia de la base de datos.
+volumes:
+  mongo-data:
+    driver: local # Especifica el driver del volumen (local es por defecto).
+
+# --- Redes Personalizadas ---
+# Define una red personalizada para que los servicios puedan comunicarse por nombre.
+networks:
+  travel-network:
+    driver: bridge # Driver de red por defecto para comunicación entre contenedores en un mismo host.
+
+# Comentarios Adicionales:
+# - Archivo .env: Crear un archivo .env en la raíz del proyecto para definir las variables
+#   JWT_SECRET, BACKEND_PORT_HOST, BACKEND_PORT_CONTAINER, FRONTEND_PORT_HOST.
+# - Desarrollo vs Producción: Este docker-compose.yml tiene configuraciones útiles para desarrollo
+#   (como el montaje de volúmenes para el código del backend). Para producción, se construirían imágenes
+#   sin estos volúmenes de código y se gestionarían las variables de entorno de forma segura.
+# - Proxy Nginx: Para una mejor integración frontend-backend, especialmente en producción,
+#   se recomienda configurar Nginx en el servicio frontend como un reverse proxy para las
+#   peticiones al backend (ej., /api -> backend:PORT). Esto evita problemas de CORS y simplifica
+#   la configuración del frontend. Esto se puede hacer con un nginx.conf personalizado.

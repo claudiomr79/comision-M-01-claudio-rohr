@@ -8,7 +8,8 @@ import Register from './components/Register';
 import StartSession from './components/StartSession';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreatePostPage from './pages/CreatePostPage';
-import SinglePostPage from './pages/SinglePostPage'; // Import SinglePostPage
+import SinglePostPage from './pages/SinglePostPage';
+import EditPostPage from './pages/EditPostPage'; // Import EditPostPage
 // import Post from './components/Post';
 
 function App() {
@@ -36,6 +37,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreatePostPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/posts/:postId/edit"
+            element={
+              <ProtectedRoute>
+                <EditPostPage />
               </ProtectedRoute>
             }
           />

@@ -51,7 +51,10 @@ function Register() {
             type="text"
             id="username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              if (error) setError(null); // Limpiar error al escribir
+            }}
             required
             disabled={loading}
           />
@@ -62,7 +65,10 @@ function Register() {
             type="email"
             id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError(null); // Limpiar error al escribir
+            }}
             required
             disabled={loading}
           />
@@ -73,7 +79,10 @@ function Register() {
             type="password"
             id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (error) setError(null); // Limpiar error al escribir
+            }}
             required
             minLength="6"
             disabled={loading}
