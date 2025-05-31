@@ -1,16 +1,17 @@
 let listOfPosts = [
   {
-    id: Date.now(),
+    id: Date.now(), // Example ID
     title: "React",
     desc: "Mi primer app",
     image: "https://loremflickr.com/640/360",
+    userId: 1 // Example userId, assuming a user with ID 1 exists for the initial post
   },
 ];
 
-const createNewPost = ({ title, desc, image }) => {
-  if (!title) return null;
+const createNewPost = ({ title, desc, image, userId }) => {
+  if (!title || !userId) return null; // userId is now required
 
-  const newPost = { id: Date.now(), title, desc, image };
+  const newPost = { id: Date.now(), title, desc, image, userId };
 
   listOfPosts.push(newPost);
 
@@ -22,43 +23,45 @@ const getAllPosts = () => {
 };
 
 const getPostById = ({ id }) => {
-  console.log(id);
-  const post = listOfPosts.find((post) => post.id === id);
+  // Ensure 'id' is treated as a number for comparison, as Date.now() produces numbers
+  const numericId = parseInt(id, 10);
+  if (isNaN(numericId)) return undefined; // Or handle error appropriately
+
+  const post = listOfPosts.find((post) => post.id === numericId);
 
   return post;
 };
 
 const findPostByIdAndUpdate = (id, data) => {
-  const post = getPostById({ id });
+  // Ensure 'id' is treated as a number
+  const numericId = parseInt(id, 10);
+  if (isNaN(numericId)) return null;
 
-  if (!post) return null;
+  const postIndex = listOfPosts.findIndex((post) => post.id === numericId);
 
-  listOfPosts = listOfPosts.map((post) => {
-    if (post.id === id) {
-      if (data.title) post.title = data.title;
-      if (data.desc) post.desc = data.desc;
-      if (data.image) post.image = data.image;
+  if (postIndex === -1) return null;
 
-      return post;
-    }
+  const post = listOfPosts[postIndex];
 
-    return post;
-  });
+  const updatedPost = { ...post, ...data };
+  listOfPosts[postIndex] = updatedPost;
 
-  return {
-    ...post,
-    ...data,
-  };
+  return updatedPost;
 };
 
 const deletePostById = ({ id }) => {
-  listOfPosts = listOfPosts.filter((post) => post.id !== id);
+  // Ensure 'id' is treated as a number
+  const numericId = parseInt(id, 10);
+  if (isNaN(numericId)) return; // Or handle error
+
+  listOfPosts = listOfPosts.filter((post) => post.id !== numericId);
 };
 
 export const postModel = {
+
   findAll: getAllPosts,
   create: createNewPost,
   findOne: getPostById,
-  update: findPostByIdAndUpdate,
+  update: findPostByIdAndUpdate, // findPostByIdAndUpdate now correctly returns the updated post
   destroy: deletePostById,
 };

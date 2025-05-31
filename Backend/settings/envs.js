@@ -4,4 +4,5 @@ config();
 
 export const env = {
   PORT: process.env.PORT || 4000,
+  JWT_SECRET: process.env.JWT_SECRET || 'fallback-secret-key-for-dev-do-not-use-in-prod',
 };
