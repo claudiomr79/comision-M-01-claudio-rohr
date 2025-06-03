@@ -62,8 +62,41 @@ npm run dev
 ### 🌐 URLs de acceso
 
 - **Frontend**: http://localhost:5173
-- **Backend**: http://localhost:4000
-- **API Posts**: http://localhost:4000/posts
+- **Backend API**: http://localhost:3002/api
+- **Endpoint API posts**: http://localhost:3002/api/posts
+
+#### Métodos disponibles (Endpoints REST)
+
+- `POST /api/users/register` — Registrar nuevo usuario
+- `POST /api/users/login` — Iniciar sesión y obtener JWT
+- `GET /api/users/profile` — Perfil del usuario (JWT protegido)
+- `PUT /api/users/profile` — Actualizar perfil (JWT protegido)
+- `GET /api/posts` — Obtener todos los posts
+- `GET /api/posts/:postId` — Obtener post por ID
+- `POST /api/posts` — Crear post (JWT protegido)
+- `PUT /api/posts/:postId` — Actualizar post (solo autor o admin, JWT protegido)
+- `DELETE /api/posts/:postId` — Eliminar post (solo autor o admin, JWT protegido)
+- `GET /api/comments/post/:postId` — Obtener comentarios de un post
+- `POST /api/comments/post/:postId` — Crear comentario (JWT protegido)
+
+### 🛠️ Instalación y ejecución
+
+**Instalar y poblar BD:**
+
+```bash
+cd Backend
+npm install
+npm run seed    # Pobla la BD con datos de ejemplo
+npm run dev     # Inicia servidor en puerto 3002
+```
+
+**Iniciar Frontend:**
+
+```bash
+cd "Frontend/Plataforma Interactiva de Viajes con Registro y Login"
+npm install
+npm run dev     # Inicia Vite en puerto 5173
+```
 
 ### 🎯 Funcionalidades implementadas
 

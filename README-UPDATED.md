@@ -97,15 +97,15 @@ Una plataforma completa para compartir experiencias de viajes con sistema de aut
 
    ```bash
    cd Backend
-   npm run dev
-   # Servidor en http://localhost:3002
+   npm run dev    # Servidor en http://localhost:3002
    ```
 
 6. **Iniciar el Frontend** (en otra terminal)
+
    ```bash
    cd "Frontend/Plataforma Interactiva de Viajes con Registro y Login"
-   npm run dev
-   # Aplicación en http://localhost:5174
+   npm install
+   npm run dev    # Servidor en http://localhost:5173
    ```
 
 ## 🌐 URLs de la Aplicación

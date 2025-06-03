@@ -5,6 +5,10 @@ function PostList() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState({ id: "", title: "", desc: "" });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState("");
   const { user, token } = useAuth();
 
   useEffect(() => {
@@ -27,8 +31,7 @@ function PostList() {
   };
 
   const handleDeletePost = async (id) => {
-    if (!window.confirm("¿Estás seguro de que quieres eliminar este post?"))
-      return;
+    // invocado internamente tras confirmar en modal
     try {
       const res = await fetch(`http://localhost:3002/api/posts/${id}`, {
         method: "DELETE",
@@ -50,38 +53,57 @@ function PostList() {
     }
   };
 
-  // Agregar edición simple con prompts
-  const handleEditPost = async (id, post) => {
-    const title = prompt("Nuevo título:", post.title);
-    if (title === null) return;
-    const desc = prompt("Nueva descripción:", post.desc);
-    if (desc === null) return;
+  const openEditModal = (post) => {
+    setEditData({ id: post._id, title: post.title, desc: post.desc });
+    setShowEditModal(true);
+  };
+
+  const handleModalChange = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  const handleUpdatePost = async () => {
     try {
-      const res = await fetch(`http://localhost:3002/api/posts/${id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          desc,
-          image: post.image,
-          location: post.location || "",
-          tags: post.tags?.join(",") || "",
-        }),
-      });
-      const result = await res.json();
+      const res = await fetch(
+        `http://localhost:3002/api/posts/${editData.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: editData.title,
+            desc: editData.desc,
+          }),
+        }
+      );
       if (res.ok) {
-        alert("Post actualizado correctamente");
+        setShowEditModal(false);
         fetchPosts();
       } else {
-        alert(result.message || "Error al actualizar post");
+        const err = await res.json();
+        alert(err.message || "Error al actualizar");
       }
     } catch (err) {
-      console.error("Error updating post:", err);
+      console.error(err);
       alert("Error de conexión");
     }
+  };
+
+  const openDeleteModal = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    handleDeletePost(deleteId);
+    setShowDeleteModal(false);
+    setDeleteId("");
+  };
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteId("");
   };
 
   if (loading)
@@ -163,13 +185,13 @@ function PostList() {
                       <div className="btn-group w-100" role="group">
                         <button
                           className="btn btn-outline-primary btn-sm"
-                          onClick={() => handleEditPost(post._id, post)}
+                          onClick={() => openEditModal(post)}
                         >
                           Editar
                         </button>
                         <button
                           className="btn btn-outline-danger btn-sm"
-                          onClick={() => handleDeletePost(post._id)}
+                          onClick={() => openDeleteModal(post._id)}
                         >
                           Eliminar
                         </button>
@@ -184,6 +206,99 @@ function PostList() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Modal de edición */}
+      {showEditModal && (
+        <div className="modal show d-block" tabIndex="-1">
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Editar Post</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowEditModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Título</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="title"
+                    value={editData.title}
+                    onChange={handleModalChange}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Descripción</label>
+                  <textarea
+                    className="form-control"
+                    name="desc"
+                    rows="4"
+                    value={editData.desc}
+                    onChange={handleModalChange}
+                  ></textarea>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleUpdatePost}
+                >
+                  Guardar cambios
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de eliminación */}
+      {showDeleteModal && (
+        <div className="modal show d-block" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirmar eliminación</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCancelDelete}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>¿Estás seguro de que quieres eliminar este post?</p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCancelDelete}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleConfirmDelete}
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
