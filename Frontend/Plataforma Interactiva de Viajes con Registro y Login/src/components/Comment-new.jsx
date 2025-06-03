@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useContext } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import "./Comment.css";
 
 function Comment({ postId, showTitle = true }) {
@@ -9,7 +9,7 @@ function Comment({ postId, showTitle = true }) {
   const [error, setError] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const { user, token } = useAuth();
+  const { user, token } = useContext(AuthContext);
 
   const fetchComments = async () => {
     if (!postId) {

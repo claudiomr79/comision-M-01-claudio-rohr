@@ -1,51 +1,228 @@
-import { postModel } from "../models/post-model.js";
+import Post from "../models/post-model.js";
+import Comment from "../models/comment-model.js";
 
-export function ctrlCreatePost(req, res) {
-  const { title, desc, image } = req.body;
+// Create new post
+export const ctrlCreatePost = async (req, res) => {
+  try {
+    const { title, desc, image, location, tags } = req.body;
 
-  postModel.create({ title, desc, image });
+    const post = await Post.create({
+      title,
+      desc,
+      image,
+      location,
+      tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
+      author: req.user.id,
+    });
 
-  res.sendStatus(201);
-}
-
-export const ctrlGetAllPosts = (req, res) => {
-  const posts = postModel.findAll();
-
-  res.json(posts);
-};
-
-export const ctrlGetPostById = (req, res) => {
-  const { postId } = req.params;
-
-  console.log(req.params);
-
-  const post = postModel.findOne({ id: postId });
-
-  if (!post) {
-    return res.sendStatus(404);
+    res.status(201).json({
+      success: true,
+      message: "Post created successfully",
+      post,
+    });
+  } catch (error) {
+    console.error("Create post error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error creating post",
+    });
   }
-
-  res.status(200).json(post);
 };
 
-export const ctrlUpdatePost = (req, res) => {
-  console.log(req.params);
+// Get all posts
+export const ctrlGetAllPosts = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, sort = "-createdAt" } = req.query;
 
-  const { postId } = req.params;
+    const posts = await Post.find()
+      .sort(sort)
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
 
-  const { title, desc, image } = req.body;
+    const total = await Post.countDocuments();
 
-  const updatedPost = postModel.update(postId, { title, desc, image });
-
-  if (!updatedPost) return res.sendStatus(404);
-
-  res.sendStatus(200);
+    res.status(200).json({
+      success: true,
+      count: posts.length,
+      total,
+      pagination: {
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+      },
+      posts,
+    });
+  } catch (error) {
+    console.error("Get posts error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching posts",
+    });
+  }
 };
 
-export const ctrlDeletePost = (req, res) => {
-  const { postId } = req.params;
+// Get post by ID
+export const ctrlGetPostById = async (req, res) => {
+  try {
+    const { postId } = req.params;
 
-  postModel.destroy({ id: postId });
+    const post = await Post.findById(postId);
 
-  res.sendStatus(200);
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      post,
+    });
+  } catch (error) {
+    console.error("Get post error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching post",
+    });
+  }
+};
+
+// Update post
+export const ctrlUpdatePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { title, desc, image, location, tags } = req.body;
+
+    let post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    // Check if user owns the post
+    if (
+      post.author._id.toString() !== req.user.id &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to update this post",
+      });
+    }
+
+    const updateData = {
+      title,
+      desc,
+      image,
+      location,
+      tags: tags ? tags.split(",").map((tag) => tag.trim()) : post.tags,
+    };
+
+    post = await Post.findByIdAndUpdate(postId, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Post updated successfully",
+      post,
+    });
+  } catch (error) {
+    console.error("Update post error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Error updating post",
+    });
+  }
+};
+
+// Delete post
+export const ctrlDeletePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    // Check if user owns the post
+    if (
+      post.author._id.toString() !== req.user.id &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to delete this post",
+      });
+    }
+
+    // Delete all comments associated with this post
+    await Comment.deleteMany({ post: postId });
+
+    // Delete the post
+    await Post.findByIdAndDelete(postId);
+
+    res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete post error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting post",
+    });
+  }
+};
+
+// Like/Unlike post
+export const ctrlToggleLikePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user.id;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    const likeIndex = post.likes.findIndex(
+      (like) => like.user.toString() === userId
+    );
+
+    if (likeIndex > -1) {
+      // Remove like
+      post.likes.splice(likeIndex, 1);
+    } else {
+      // Add like
+      post.likes.push({ user: userId });
+    }
+
+    await post.save();
+
+    res.status(200).json({
+      success: true,
+      message: likeIndex > -1 ? "Post unliked" : "Post liked",
+      likes: post.likes.length,
+    });
+  } catch (error) {
+    console.error("Toggle like error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error toggling like",
+    });
+  }
 };

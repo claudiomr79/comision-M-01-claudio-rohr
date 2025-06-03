@@ -1,28 +1,99 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-h1{
-    text-align: center;
-    color: rgb(213, 89, 89);
-    margin: 30px;
-
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+h1 {
+  text-align: center;
+  color: rgb(213, 89, 89);
+  margin: 30px;
+}
 
 #comment ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin: 20px;
-    border: 1px solid rgb(216, 156, 156);
-    padding: 20px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 20px;
+  border: 1px solid rgb(216, 156, 156);
+  padding: 20px;
 }
-#comment li{
-    margin: 10px;
-    border: 1px solid rgb(240, 236, 236);
-    padding: 10px;
-    text-align: left
+
+#comment li {
+  margin: 10px;
+  border: 1px solid rgb(240, 236, 236);
+  padding: 10px;
+  text-align: left;
+}
+
+/* Nuevos estilos para el sistema de comentarios integrado */
+.comment-section {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.comment-form {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comment-card {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.comment-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.25rem;
+}
+
+.comment-content {
+  line-height: 1.6;
+  color: #212529;
+}
+
+.comment-meta {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.btn-comment {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.btn-comment:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.character-counter {
+  font-size: 0.875rem;
+  color: #6c757d;
+  text-align: right;
+}
+
+.character-counter.warning {
+  color: #dc3545;
+}
+
+.no-comments {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 2rem;
 }

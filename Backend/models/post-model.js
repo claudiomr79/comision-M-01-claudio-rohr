@@ -1,64 +1,80 @@
-let listOfPosts = [
-  {
-    id: Date.now(),
-    title: "React",
-    desc: "Mi primer app",
-    image: "https://loremflickr.com/640/360",
+import mongoose from "mongoose";
+
+const postSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, "Title is required"],
+    trim: true,
+    maxlength: [100, "Title cannot exceed 100 characters"],
   },
-];
+  desc: {
+    type: String,
+    required: [true, "Description is required"],
+    trim: true,
+    maxlength: [500, "Description cannot exceed 500 characters"],
+  },
+  image: {
+    type: String,
+    required: [true, "Image URL is required"],
+    match: [/^https?:\/\/.+/, "Please enter a valid URL"],
+  },
+  author: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: [true, "Post must have an author"],
+  },
+  comments: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Comment",
+    },
+  ],
+  likes: [
+    {
+      user: {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  location: {
+    type: String,
+    trim: true,
+  },
+  tags: [String],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-const createNewPost = ({ title, desc, image }) => {
-  if (!title) return null;
+// Update the updatedAt field before saving
+postSchema.pre("save", function (next) {
+  this.updatedAt = Date.now();
+  next();
+});
 
-  const newPost = { id: Date.now(), title, desc, image };
-
-  listOfPosts.push(newPost);
-
-  return newPost;
-};
-
-const getAllPosts = () => {
-  return [...listOfPosts];
-};
-
-const getPostById = ({ id }) => {
-  console.log(id);
-  const post = listOfPosts.find((post) => post.id === id);
-
-  return post;
-};
-
-const findPostByIdAndUpdate = (id, data) => {
-  const post = getPostById({ id });
-
-  if (!post) return null;
-
-  listOfPosts = listOfPosts.map((post) => {
-    if (post.id === id) {
-      if (data.title) post.title = data.title;
-      if (data.desc) post.desc = data.desc;
-      if (data.image) post.image = data.image;
-
-      return post;
-    }
-
-    return post;
+// Populate author and comments when finding
+postSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "author",
+    select: "name email avatar",
+  }).populate({
+    path: "comments",
+    populate: {
+      path: "author",
+      select: "name email avatar",
+    },
   });
+  next();
+});
 
-  return {
-    ...post,
-    ...data,
-  };
-};
-
-const deletePostById = ({ id }) => {
-  listOfPosts = listOfPosts.filter((post) => post.id !== id);
-};
-
-export const postModel = {
-  findAll: getAllPosts,
-  create: createNewPost,
-  findOne: getPostById,
-  update: findPostByIdAndUpdate,
-  destroy: deletePostById,
-};
+export default mongoose.model("Post", postSchema);
