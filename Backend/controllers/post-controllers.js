@@ -32,23 +32,11 @@ export const ctrlCreatePost = async (req, res) => {
 // Get all posts
 export const ctrlGetAllPosts = async (req, res) => {
   try {
-    const { page = 1, limit = 10, sort = "-createdAt" } = req.query;
-
-    const posts = await Post.find()
-      .sort(sort)
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-
-    const total = await Post.countDocuments();
-
+    // Devolver todos los posts sin paginación
+    const posts = await Post.find().sort("-createdAt");
     res.status(200).json({
       success: true,
       count: posts.length,
-      total,
-      pagination: {
-        page: parseInt(page),
-        pages: Math.ceil(total / limit),
-      },
       posts,
     });
   } catch (error) {

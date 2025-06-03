@@ -106,6 +106,9 @@ function PostList() {
     setDeleteId("");
   };
 
+  // Mostrar posts en orden original para evitar perder alguno
+  const sortedPosts = posts;
+
   if (loading)
     return (
       <div className="container mt-4 text-center">
@@ -139,73 +142,61 @@ function PostList() {
         </div>
       ) : (
         <div className="row">
-          {posts.map((post) => (
-            <div key={post._id} className="col-md-6 col-lg-4 mb-4">
-              <div className="card h-100 shadow-sm">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="card-img-top"
-                  style={{ height: "200px", objectFit: "cover" }}
-                  onError={(e) =>
-                    (e.target.src =
-                      "https://via.placeholder.com/300x200?text=No+Image")
-                  }
-                />
-                <div className="card-body d-flex flex-column">
-                  <h5 className="card-title">{post.title}</h5>
-                  <p className="card-text flex-grow-1">{post.desc}</p>
-                  <div className="text-muted small mb-2">
-                    Por: {post.author?.name || "Usuario"}
-                  </div>
-                  <div className="mt-auto">
-                    {/* debug permisos */}
-                    {console.log(
-                      "Post autor ID:",
-                      post.author?._id,
-                      "Usuario ID:",
-                      user?.id
-                    )}
-                    {user && (
-                      <div className="small text-muted mb-2">
-                        {`Usuario: ${user.name} (ID: ${user.id})`}
-                        <br />
-                        {`Autor: ${post.author?.name} (ID: ${post.author?._id})`}
-                        <br />
-                        {`¿Es autor?: ${
-                          String(user.id) === String(post.author?._id)
-                            ? "SÍ"
-                            : "NO"
-                        }`}
-                      </div>
-                    )}
-                    {user &&
-                    (String(user.id) === String(post.author?._id) ||
-                      user.role === "admin") ? (
-                      <div className="btn-group w-100" role="group">
-                        <button
-                          className="btn btn-outline-primary btn-sm"
-                          onClick={() => openEditModal(post)}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          className="btn btn-outline-danger btn-sm"
-                          onClick={() => openDeleteModal(post._id)}
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    ) : user ? (
-                      <div className="small text-warning">
-                        No tienes permisos para editar este post
-                      </div>
-                    ) : null}
+          {posts.map((post) => {
+            const isAuthor =
+              user && String(post.author?._id) === String(user.id);
+            return (
+              <div key={post._id} className="col-md-6 col-lg-4 mb-4">
+                <div
+                  className={`card h-100 shadow-sm${
+                    isAuthor ? " shadow-lg border border-primary" : ""
+                  }`}
+                >
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="card-img-top"
+                    style={{ height: "200px", objectFit: "cover" }}
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://via.placeholder.com/300x200?text=No+Image")
+                    }
+                  />
+                  <div className="card-body d-flex flex-column">
+                    <h5 className="card-title">{post.title}</h5>
+                    <p className="card-text flex-grow-1">{post.desc}</p>
+                    <div className="text-muted small mb-2">
+                      Por: {post.author?.name || "Usuario"}
+                    </div>
+                    <div className="mt-auto">
+                      {user &&
+                      (String(user.id) === String(post.author?._id) ||
+                        user.role === "admin") ? (
+                        <div className="btn-group w-100" role="group">
+                          <button
+                            className="btn btn-outline-primary btn-sm"
+                            onClick={() => openEditModal(post)}
+                          >
+                            Editar
+                          </button>
+                          <button
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => openDeleteModal(post._id)}
+                          >
+                            Eliminar
+                          </button>
+                        </div>
+                      ) : user ? (
+                        <div className="small text-warning">
+                          No tienes permisos para editar este post
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
