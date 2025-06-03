@@ -5,7 +5,7 @@ function PostForm() {
   const { apiRequest, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
+    desc: "",
     image: "",
     location: "",
   });
@@ -42,7 +42,7 @@ function PostForm() {
 
       if (response.ok) {
         setMessage({ type: "success", text: "Post created successfully!" });
-        setFormData({ title: "", description: "", image: "", location: "" });
+        setFormData({ title: "", desc: "", image: "", location: "" });
       } else {
         setMessage({
           type: "error",
@@ -105,15 +105,15 @@ function PostForm() {
                   />
                 </div>{" "}
                 <div className="mb-3">
-                  <label htmlFor="description" className="form-label">
+                  <label htmlFor="desc" className="form-label">
                     Description
                   </label>
                   <textarea
                     className="form-control"
-                    id="description"
-                    name="description"
+                    id="desc"
+                    name="desc"
                     rows="4"
-                    value={formData.description}
+                    value={formData.desc}
                     onChange={handleChange}
                     placeholder="Describe your travel experience..."
                     required
