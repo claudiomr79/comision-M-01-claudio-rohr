@@ -187,8 +187,14 @@ export const ctrlToggleLikePost = async (req, res) => {
       });
     }
 
+    // Ensure post.likes is an array before attempting to use array methods on it
+    if (!Array.isArray(post.likes)) {
+      console.warn(`Post with ID ${postId} had a non-array 'likes' field. Initializing to empty array.`);
+      post.likes = [];
+    }
+
     const likeIndex = post.likes.findIndex(
-      (like) => like.user.toString() === userId
+      (like) => like.user && like.user.toString() === userId
     );
 
     if (likeIndex > -1) {
@@ -201,13 +207,19 @@ export const ctrlToggleLikePost = async (req, res) => {
 
     await post.save();
 
+    // Populate author details before sending the post back
+    // The pre-find hook on Post model already populates 'author' with name and avatar.
+    // This explicit populate ensures 'name' is definitely there if the selection was different.
+    const populatedPost = await Post.findById(post._id).populate('author', 'name');
+
+
     res.status(200).json({
       success: true,
       message: likeIndex > -1 ? "Post unliked" : "Post liked",
-      likes: post.likes.length,
+      post: populatedPost, // Send the full updated post object
     });
   } catch (error) {
-    console.error("Toggle like error:", error);
+    console.error("Toggle like error:", error); // This logs the specific error to the backend console
     res.status(500).json({
       success: false,
       message: "Error toggling like",

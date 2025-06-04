@@ -43,6 +43,7 @@ function Post() {
   };
 
   const handleLike = async (postId) => {
+    console.log("Attempting to like post with ID:", postId); // Add this line for debugging
     if (!token || likingPosts.has(postId)) return;
 
     setLikingPosts((prev) => new Set(prev).add(postId));
@@ -51,7 +52,7 @@ function Post() {
       const response = await fetch(
         `http://localhost:3002/api/posts/${postId}/like`,
         {
-          method: "PUT",
+          method: "POST", // Changed from PUT to POST
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -82,7 +83,11 @@ function Post() {
   };
 
   const isLiked = (post) => {
-    return user && post.likes?.includes(user.id);
+    if (!user || !post.likes) return false;
+    // Check if any object in post.likes has a user property equal to user.id
+    return post.likes.some(
+      (like) => like.user === user.id || like.user?._id === user.id
+    );
   };
 
   return (
