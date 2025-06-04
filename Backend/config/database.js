@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv'; // Importar dotenv
+
+dotenv.config(); // Cargar variables de entorno
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(
-      "mongodb://localhost:27017/travel_platform_db_local"
-    );
+    // Usar la variable de entorno MONGODB_URI
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
