@@ -1,8 +1,8 @@
-import Post from "../models/post-model.js";
-import Comment from "../models/comment-model.js";
+const Post = require("../models/post-model.js");
+const Comment = require("../models/comment-model.js");
 
 // Create new post
-export const ctrlCreatePost = async (req, res) => {
+const ctrlCreatePost = async (req, res) => {
   try {
     const { title, desc, image, location, tags } = req.body;
 
@@ -30,7 +30,7 @@ export const ctrlCreatePost = async (req, res) => {
 };
 
 // Get all posts
-export const ctrlGetAllPosts = async (req, res) => {
+const ctrlGetAllPosts = async (req, res) => {
   try {
     // Devolver todos los posts sin paginación
     const posts = await Post.find().sort("-createdAt");
@@ -49,7 +49,7 @@ export const ctrlGetAllPosts = async (req, res) => {
 };
 
 // Get post by ID
-export const ctrlGetPostById = async (req, res) => {
+const ctrlGetPostById = async (req, res) => {
   try {
     const { postId } = req.params;
 
@@ -76,7 +76,7 @@ export const ctrlGetPostById = async (req, res) => {
 };
 
 // Update post
-export const ctrlUpdatePost = async (req, res) => {
+const ctrlUpdatePost = async (req, res) => {
   try {
     const { postId } = req.params;
     const { title, desc, image, location, tags } = req.body;
@@ -129,7 +129,7 @@ export const ctrlUpdatePost = async (req, res) => {
 };
 
 // Delete post
-export const ctrlDeletePost = async (req, res) => {
+const ctrlDeletePost = async (req, res) => {
   try {
     const { postId } = req.params;
 
@@ -173,7 +173,7 @@ export const ctrlDeletePost = async (req, res) => {
 };
 
 // Like/Unlike post
-export const ctrlToggleLikePost = async (req, res) => {
+const ctrlToggleLikePost = async (req, res) => {
   try {
     const { postId } = req.params;
     const userId = req.user.id;
@@ -225,4 +225,13 @@ export const ctrlToggleLikePost = async (req, res) => {
       message: "Error toggling like",
     });
   }
+};
+
+module.exports = {
+  ctrlCreatePost,
+  ctrlGetAllPosts,
+  ctrlGetPostById,
+  ctrlUpdatePost,
+  ctrlDeletePost,
+  ctrlToggleLikePost,
 };

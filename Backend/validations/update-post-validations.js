@@ -1,6 +1,6 @@
-import { body, param } from "express-validator";
+const { body, param } = require("express-validator");
 
-export const updatePostValidation = [
+const updatePostValidation = [
   param("postId").isNumeric().withMessage("La id debe ser un numero").toInt(),
   body("title")
     .optional()
@@ -12,3 +12,5 @@ export const updatePostValidation = [
     .withMessage("La descripcion debe ser un string"),
   body("image").optional().isURL().withMessage("La imagen deber ser una url."),
 ];
+
+module.exports = { updatePostValidation };

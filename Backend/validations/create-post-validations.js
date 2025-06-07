@@ -1,6 +1,6 @@
-import { body } from "express-validator";
+const { body } = require("express-validator");
 
-export const createPostValidation = [
+const createPostValidation = [
   body("title")
     .notEmpty()
     .withMessage("El título es requerido.")
@@ -17,3 +17,5 @@ export const createPostValidation = [
     .isURL()
     .withMessage("La imagen deber ser una url."),
 ];
+
+module.exports = { createPostValidation };

@@ -1,14 +1,14 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
-import connectDB from "./config/database.js";
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const connectDB = require("./config/database.js");
 
-import { postsRouter } from "./routes/post-routes.js";
-import { userRouter } from "./routes/user-routes.js";
-import { commentRouter } from "./routes/comment-routes.js";
+const { postsRouter } = require("./routes/post-routes.js");
+const { userRouter } = require("./routes/user-routes.js");
+const { commentRouter } = require("./routes/comment-routes.js");
 
-import { env } from "./settings/envs.js";
+const { env } = require("./settings/envs.js");
 
 const app = express();
 
@@ -71,7 +71,11 @@ app.use("*", (req, res) => {
   });
 });
 
-app.listen(env.PORT, () => {
-  console.log(`🚀 Server running on port ${env.PORT}`);
-  console.log(`📊 Health check: http://localhost:${env.PORT}/api/health`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(env.PORT, () => {
+    console.log(`🚀 Server running on port ${env.PORT}`);
+    console.log(`📊 Health check: http://localhost:${env.PORT}/api/health`);
+  });
+}
+
+module.exports = app;

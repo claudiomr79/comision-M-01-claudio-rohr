@@ -1,15 +1,15 @@
-import { Router } from "express";
-import {
+const express = require("express");
+const {
   ctrlRegisterUser,
   ctrlLoginUser,
   ctrlGetUserProfile,
   ctrlUpdateUserProfile,
-} from "../controllers/user-controllers.js";
-import { protect } from "../middlewares/auth.js";
-import { body } from "express-validator";
-import { applyValidations } from "../middlewares/applyValidations.js";
+} = require("../controllers/user-controllers.js");
+const { protect } = require("../middlewares/auth.js");
+const { body } = require("express-validator");
+const { applyValidations } = require("../middlewares/applyValidations.js");
 
-const userRouter = Router();
+const userRouter = express.Router();
 
 // Registration validation
 const registerValidation = [
@@ -68,4 +68,4 @@ userRouter.put(
   ctrlUpdateUserProfile
 );
 
-export { userRouter };
+module.exports = { userRouter };

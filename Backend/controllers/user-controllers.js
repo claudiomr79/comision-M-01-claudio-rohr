@@ -1,5 +1,5 @@
-import User from "../models/user-model.js";
-import jwt from "jsonwebtoken";
+const User = require("../models/user-model.js");
+const jwt = require("jsonwebtoken");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || "fallback_secret", {
@@ -8,7 +8,7 @@ const generateToken = (id) => {
 };
 
 // Register user
-export const ctrlRegisterUser = async (req, res) => {
+const ctrlRegisterUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -53,7 +53,7 @@ export const ctrlRegisterUser = async (req, res) => {
 };
 
 // Login user
-export const ctrlLoginUser = async (req, res) => {
+const ctrlLoginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -100,7 +100,7 @@ export const ctrlLoginUser = async (req, res) => {
 };
 
 // Get user profile
-export const ctrlGetUserProfile = async (req, res) => {
+const ctrlGetUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
 
@@ -125,7 +125,7 @@ export const ctrlGetUserProfile = async (req, res) => {
 };
 
 // Update user profile
-export const ctrlUpdateUserProfile = async (req, res) => {
+const ctrlUpdateUserProfile = async (req, res) => {
   try {
     const { name, email } = req.body;
 
@@ -153,4 +153,11 @@ export const ctrlUpdateUserProfile = async (req, res) => {
       message: error.message || "Error updating profile",
     });
   }
+};
+
+module.exports = {
+  ctrlRegisterUser,
+  ctrlLoginUser,
+  ctrlGetUserProfile,
+  ctrlUpdateUserProfile,
 };

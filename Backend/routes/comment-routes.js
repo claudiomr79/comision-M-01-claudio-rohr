@@ -1,15 +1,15 @@
-import { Router } from "express";
-import {
+const express = require("express");
+const {
   ctrlCreateComment,
   ctrlGetPostComments,
   ctrlUpdateComment,
   ctrlDeleteComment,
-} from "../controllers/comment-controllers.js";
-import { protect } from "../middlewares/auth.js";
-import { body, param } from "express-validator";
-import { applyValidations } from "../middlewares/applyValidations.js";
+} = require("../controllers/comment-controllers.js");
+const { protect } = require("../middlewares/auth.js");
+const { body, param } = require("express-validator");
+const { applyValidations } = require("../middlewares/applyValidations.js");
 
-const commentRouter = Router();
+const commentRouter = express.Router();
 
 // Validation schemas
 const createCommentValidation = [
@@ -74,4 +74,4 @@ commentRouter.delete(
   ctrlDeleteComment
 );
 
-export { commentRouter };
+module.exports = { commentRouter };

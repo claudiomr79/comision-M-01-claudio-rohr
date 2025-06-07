@@ -1,8 +1,8 @@
-import Comment from "../models/comment-model.js";
-import Post from "../models/post-model.js";
+const Comment = require("../models/comment-model.js");
+const Post = require("../models/post-model.js");
 
 // Create comment
-export const ctrlCreateComment = async (req, res) => {
+const ctrlCreateComment = async (req, res) => {
   try {
     const { content } = req.body;
     const { postId } = req.params;
@@ -42,7 +42,7 @@ export const ctrlCreateComment = async (req, res) => {
 };
 
 // Get comments for a post
-export const ctrlGetPostComments = async (req, res) => {
+const ctrlGetPostComments = async (req, res) => {
   try {
     const { postId } = req.params;
     const { page = 1, limit = 10 } = req.query;
@@ -74,7 +74,7 @@ export const ctrlGetPostComments = async (req, res) => {
 };
 
 // Update comment
-export const ctrlUpdateComment = async (req, res) => {
+const ctrlUpdateComment = async (req, res) => {
   try {
     const { commentId } = req.params;
     const { content } = req.body;
@@ -120,7 +120,7 @@ export const ctrlUpdateComment = async (req, res) => {
 };
 
 // Delete comment
-export const ctrlDeleteComment = async (req, res) => {
+const ctrlDeleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
 
@@ -163,4 +163,11 @@ export const ctrlDeleteComment = async (req, res) => {
       message: "Error deleting comment",
     });
   }
+};
+
+module.exports = {
+  ctrlCreateComment,
+  ctrlGetPostComments,
+  ctrlUpdateComment,
+  ctrlDeleteComment,
 };

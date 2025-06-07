@@ -1,17 +1,17 @@
-import { Router } from "express";
-import {
+const express = require("express");
+const {
   ctrlCreatePost,
   ctrlDeletePost,
   ctrlGetAllPosts,
   ctrlGetPostById,
   ctrlUpdatePost,
   ctrlToggleLikePost,
-} from "../controllers/post-controllers.js";
-import { protect, optionalAuth } from "../middlewares/auth.js";
-import { body, param } from "express-validator";
-import { applyValidations } from "../middlewares/applyValidations.js";
+} = require("../controllers/post-controllers.js");
+const { protect, optionalAuth } = require("../middlewares/auth.js");
+const { body, param } = require("express-validator");
+const { applyValidations } = require("../middlewares/applyValidations.js");
 
-const postsRouter = Router();
+const postsRouter = express.Router();
 
 // Validation schemas
 const createPostValidation = [
@@ -102,4 +102,4 @@ postsRouter.post(
   ctrlToggleLikePost
 );
 
-export { postsRouter };
+module.exports = { postsRouter };

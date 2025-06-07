@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
-import User from "../models/user-model.js";
+const jwt = require("jsonwebtoken");
+const User = require("../models/user-model.js");
 
-export const protect = async (req, res, next) => {
+const protect = async (req, res, next) => {
   try {
     let token;
 
@@ -54,7 +54,7 @@ export const protect = async (req, res, next) => {
 };
 
 // Optional auth - sets user if token is valid, but doesn't require it
-export const optionalAuth = async (req, res, next) => {
+const optionalAuth = async (req, res, next) => {
   try {
     let token;
 
@@ -86,7 +86,7 @@ export const optionalAuth = async (req, res, next) => {
 };
 
 // Check for admin role
-export const admin = (req, res, next) => {
+const admin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
   } else {
@@ -96,3 +96,5 @@ export const admin = (req, res, next) => {
     });
   }
 };
+
+module.exports = { protect, optionalAuth, admin };
