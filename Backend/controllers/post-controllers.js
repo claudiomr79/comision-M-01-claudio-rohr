@@ -1,3 +1,6 @@
+// Archivo: post-controllers.js
+// Controladores de posts: crear, obtener, actualizar y eliminar posts con validación de permisos de autor
+
 const Post = require("../models/post-model.js");
 const Comment = require("../models/comment-model.js");
 
@@ -189,7 +192,9 @@ const ctrlToggleLikePost = async (req, res) => {
 
     // Ensure post.likes is an array before attempting to use array methods on it
     if (!Array.isArray(post.likes)) {
-      console.warn(`Post with ID ${postId} had a non-array 'likes' field. Initializing to empty array.`);
+      console.warn(
+        `Post with ID ${postId} had a non-array 'likes' field. Initializing to empty array.`
+      );
       post.likes = [];
     }
 
@@ -210,8 +215,10 @@ const ctrlToggleLikePost = async (req, res) => {
     // Populate author details before sending the post back
     // The pre-find hook on Post model already populates 'author' with name and avatar.
     // This explicit populate ensures 'name' is definitely there if the selection was different.
-    const populatedPost = await Post.findById(post._id).populate('author', 'name');
-
+    const populatedPost = await Post.findById(post._id).populate(
+      "author",
+      "name"
+    );
 
     res.status(200).json({
       success: true,

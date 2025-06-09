@@ -3,6 +3,9 @@ import { useState, useEffect, useContext } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import "./Comment.css";
 
+// Componente: Comment.jsx
+// Administra la carga, visualización, creación y eliminación de comentarios para un post específico
+
 function Comment({ postId, showTitle = true }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);

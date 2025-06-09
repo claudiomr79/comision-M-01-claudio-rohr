@@ -1,3 +1,6 @@
+// Archivo: user-model.js
+// Modelo de Mongoose para usuarios: campos name, email, password hashed, avatar y role
+
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 

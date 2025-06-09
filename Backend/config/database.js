@@ -1,5 +1,8 @@
+// Archivo: database.js
+// Configuración y conexión a la base de datos MongoDB usando mongoose
+
 const mongoose = require("mongoose");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 
 dotenv.config();
 

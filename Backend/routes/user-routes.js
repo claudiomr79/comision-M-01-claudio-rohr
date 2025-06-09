@@ -1,3 +1,6 @@
+// Archivo: user-routes.js
+// Rutas relacionadas con usuarios: registro, login y perfil (protección con JWT)
+
 const express = require("express");
 const {
   ctrlRegisterUser,
