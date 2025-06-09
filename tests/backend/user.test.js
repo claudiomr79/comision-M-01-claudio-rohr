@@ -19,21 +19,13 @@ const request = require("supertest");
 // Importación de mongoose para manejo de la base de datos
 const mongoose = require("mongoose");
 // Importación de la aplicación Express para testing
-const app = require("./app");
+const app = require("../../Backend/app");
 
 /**
  * Suite de pruebas para la API de Usuarios
  * Contiene todas las pruebas relacionadas con autenticación y gestión de usuarios
  */
 describe("API de Usuarios", () => {
-  /**
-   * Hook que se ejecuta después de todas las pruebas
-   * Cierra la conexión a MongoDB para evitar memory leaks en tests
-   */
-  afterAll(async () => {
-    await mongoose.connection.close();
-  });
-
   /**
    * Test: Verificar que el registro rechace peticiones sin datos
    * Valida:

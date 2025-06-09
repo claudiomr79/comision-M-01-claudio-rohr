@@ -21,7 +21,7 @@ const request = require("supertest");
 // Importación de mongoose para manejo de la base de datos
 const mongoose = require("mongoose");
 // Importación de la aplicación Express para testing
-const app = require("./app");
+const app = require("../../Backend/app");
 
 // Variables globales para compartir datos entre tests
 let token; // Token JWT para autenticación
@@ -53,12 +53,7 @@ beforeAll(async () => {
 /**
  * Hook que se ejecuta después de todas las pruebas
  * Cierra la conexión a MongoDB para evitar memory leaks
- */
-afterAll(async () => {
-  await mongoose.connection.close();
-});
-
-/**
+ /**
  * Suite de pruebas para Posts y sistema de Likes
  * Verifica la funcionalidad completa de posts y el sistema de likes/unlikes
  */
@@ -202,10 +197,8 @@ describe("Comentarios", () => {
   it("debería eliminar el comentario", async () => {
     const res = await request(app)
       .delete(`/api/comments/${commentId}`)
-      .set("Authorization", `Bearer ${token}`);
-
-    // Verificar que el comentario se eliminó
+      .set("Authorization", `Bearer ${token}`); // Verificar que el comentario se eliminó
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toMatch(/deleted/);
+    expect(res.body.message).toMatch(/eliminado/); // Cambiado para coincidir con mensajes en español
   });
 });

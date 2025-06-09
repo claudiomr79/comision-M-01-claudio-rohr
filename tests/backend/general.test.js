@@ -16,7 +16,7 @@
 // Importación de supertest para realizar peticiones HTTP en tests
 const request = require("supertest");
 // Importación de la aplicación Express para testing
-const app = require("./app");
+const app = require("../../Backend/app");
 
 /**
  * Suite de pruebas para el Healthcheck de la API
