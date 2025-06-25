@@ -8,6 +8,7 @@ import Register from "./components/Register";
 import StartSession from "./components/StartSession";
 import PostForm from "./components/PostForm";
 import PostList from "./components/PostList";
+import Carousel from "./components/Carousel";
 
 function App() {
   const [currentView, setCurrentView] = useState("home");
@@ -19,26 +20,26 @@ function App() {
           <>
             <div className="container mt-4">
               <div className="jumbotron bg-primary text-white p-5 rounded mb-4">
-                <h1 className="display-4">Welcome to Travel Platform!</h1>
+                <h1 className="display-4">¡Bienvenido a la Plataforma de Viajes!</h1>
                 <p className="lead">
-                  Discover amazing travel destinations and share your
-                  experiences with fellow travelers.
+                  Descubre destinos increíbles y comparte tus experiencias con otros viajeros.
                 </p>
                 <hr className="my-4" />
-                <p>Start exploring posts or share your own travel story!</p>
+                <p>¡Empieza a explorar publicaciones o comparte tu propia historia de viaje!</p>
                 <button
                   className="btn btn-light btn-lg me-3"
                   onClick={() => setCurrentView("posts")}
                 >
-                  Explore Posts
+                  Explorar publicaciones
                 </button>
                 <button
                   className="btn btn-outline-light btn-lg"
                   onClick={() => setCurrentView("create-post")}
                 >
-                  Share Your Story
+                  Compartir mi historia
                 </button>{" "}
               </div>
+              <Carousel />
             </div>{" "}
             <Post />
           </>
@@ -46,7 +47,7 @@ function App() {
       case "posts":
         return (
           <div className="container mt-4">
-            <h2>Posts Page</h2>
+            <h2>Aquí están todos los posteos</h2>
             <Post />
           </div>
         );

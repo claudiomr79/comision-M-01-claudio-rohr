@@ -1,116 +1,114 @@
-import React from 'react'
-import { useState, useEffect, useContext } from 'react'
-import { AuthContext } from '../contexts/AuthContext'
-import './Comment.css'
+import React, { useState, useEffect, useContext } from 'react';
+import PropTypes from 'prop-types';
+import { AuthContext } from '../contexts/AuthContext';
+import './Comment.css';
 
+// Componente de comentarios para un post
 function Comment({ postId, showTitle = true }) {
-    const [comments, setComments] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
-    const [newComment, setNewComment] = useState('')
-    const [submitting, setSubmitting] = useState(false)
-    const { user, token } = useContext(AuthContext)
+    const [comments, setComments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [newComment, setNewComment] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const { user, token } = useContext(AuthContext);
 
+    // Obtener comentarios del backend
     const fetchComments = async () => {
         if (!postId) {
-            setLoading(false)
-            return
+            setLoading(false);
+            return;
         }
-
         try {
-            const response = await fetch(`http://localhost:3002/api/comments/post/${postId}`)
-            const data = await response.json()
-            
+            const response = await fetch(`http://localhost:3002/api/comments/post/${postId}`);
+            const data = await response.json();
             if (data.success) {
-                setComments(data.comments)
+                setComments(data.comments);
             } else {
-                setError(data.message)
+                setError(data.message);
             }
         } catch (error) {
-            setError('Error loading comments: ' + error.message)
+            setError('Error al cargar comentarios: ' + error.message);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
-        fetchComments()
-    }, [postId])
+        fetchComments();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [postId]);
 
+    // Enviar nuevo comentario
     const handleSubmitComment = async (e) => {
-        e.preventDefault()
-        if (!newComment.trim() || !token) return
-
-        setSubmitting(true)
+        e.preventDefault();
+        if (!newComment.trim() || !token) return;
+        setSubmitting(true);
         try {
             const response = await fetch(`http://localhost:3002/api/comments/post/${postId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({ content: newComment.trim() })
-            })
-
-            const data = await response.json()
-            
+            });
+            const data = await response.json();
             if (data.success) {
-                setNewComment('')
-                await fetchComments() // Reload comments
+                setNewComment('');
+                await fetchComments(); // Recargar comentarios
             } else {
-                setError(data.message)
+                setError(data.message);
             }
         } catch (error) {
-            setError('Error creating comment: ' + error.message)
+            setError('Error al crear comentario: ' + error.message);
         } finally {
-            setSubmitting(false)
+            setSubmitting(false);
         }
-    }
+    };
 
+    // Eliminar comentario
     const handleDeleteComment = async (commentId) => {
-        if (!token || !window.confirm('¿Estás seguro de que quieres eliminar este comentario?')) return
-
+        if (!token || !window.confirm('¿Estás seguro de que quieres eliminar este comentario?')) return;
         try {
             const response = await fetch(`http://localhost:3002/api/comments/${commentId}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 }
-            })
-
-            const data = await response.json()
-            
+            });
+            const data = await response.json();
             if (data.success) {
-                await fetchComments() // Reload comments
+                await fetchComments(); // Recargar comentarios
             } else {
-                setError(data.message)
+                setError(data.message);
             }
         } catch (error) {
-            setError('Error deleting comment: ' + error.message)
+            setError('Error al eliminar comentario: ' + error.message);
         }
-    }    const formatDate = (dateString) => {
+    };
+
+    // Formatear fecha en español
+    const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
-        })
-    }
+        });
+    };
 
     return (
         <>
-            <div className="container mt-4" id='comment'>
+            <div className="container mt-4" id="comment">
                 {showTitle && <h1 className="text-center text-primary mb-4">Comentarios</h1>}
-                
                 {error && (
                     <div className="alert alert-danger alert-dismissible fade show" role="alert">
                         {error}
                         <button type="button" className="btn-close" onClick={() => setError(null)}></button>
                     </div>
                 )}
-
-                {/* Comment form for authenticated users */}
+                {/* Formulario para usuarios autenticados */}
                 {user && postId && (
                     <div className="card mb-4">
                         <div className="card-body">
@@ -130,8 +128,8 @@ function Comment({ postId, showTitle = true }) {
                                         {newComment.length}/300 caracteres
                                     </div>
                                 </div>
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     className="btn btn-primary"
                                     disabled={submitting || !newComment.trim()}
                                 >
@@ -148,7 +146,6 @@ function Comment({ postId, showTitle = true }) {
                         </div>
                     </div>
                 )}
-
                 {loading && (
                     <div className="text-center">
                         <div className="spinner-border text-primary" role="status">
@@ -156,21 +153,18 @@ function Comment({ postId, showTitle = true }) {
                         </div>
                     </div>
                 )}
-
                 {!loading && !postId && (
                     <div className="alert alert-info text-center">
                         Selecciona un post para ver sus comentarios
                     </div>
                 )}
-
                 {!loading && postId && comments.length === 0 && (
                     <div className="alert alert-info text-center">
                         No hay comentarios aún. ¡Sé el primero en comentar!
                     </div>
                 )}
-
                 <div className="row">
-                    {comments.map(comment => (
+                    {comments.map((comment) => (
                         <div key={comment._id} className="col-12 mb-3">
                             <div className="card h-100">
                                 <div className="card-body">
@@ -203,7 +197,13 @@ function Comment({ postId, showTitle = true }) {
                 </div>
             </div>
         </>
-    )
+    );
 }
 
-export default Comment
+Comment.propTypes = {
+    postId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    showTitle: PropTypes.bool
+};
+
+export default Comment;
+// Fin del componente de comentarios

@@ -92,7 +92,7 @@ function Post() {
 
   return (
     <div className="container mt-4">
-      <h1 className="text-center text-success mb-4">Travel Posts</h1>
+      <h1 className="text-center text-success mb-4">Posts</h1>
       {loading && (
         <div className="text-center">
           <div className="spinner-border text-success" role="status">
